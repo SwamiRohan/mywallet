@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -36,20 +38,30 @@ public class CustomerController {
         return customerService.getAllCustomers();
     }
 
+    @GetMapping("/user/profile/{id}")
+    public Customer getRegisteredCustomerById(@PathVariable("id") int id){
+        Customer customer = customerService.getRegisteredCustomer(id);
+        if(customer == null)
+            throw new CustomerNotFoundException("Customer with id: "+id + " not exists");
+        return customer;
+    }
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/user/registerUser")
-    public ResponseEntity<Integer> registerUser(@RequestBody Customer customer){
-        try{
-        customerService.registerNewUser(customer);
-        }catch (CustomerAlreadyExistsException e){
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Customer with entered details already exists");
-        }
-        return new ResponseEntity<>(customer.getCustomerId(),HttpStatus.CREATED);
+    public int registerUser(@RequestBody Customer customer){
+        Customer userCreated = customerService.registerNewUser(customer);
+        /*
+        *
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{id}")
+                .buildAndExpand(userCreated.getCustomerId()).toUri();
+        return ResponseEntity.created(location).build();
+        */
+        return userCreated.getCustomerId();
     }
 
     @PutMapping("/user/setPassword")
     public void setPassword(@RequestBody Customer customer){
         customerService.setPassword(customer);
     }
-
 
 }

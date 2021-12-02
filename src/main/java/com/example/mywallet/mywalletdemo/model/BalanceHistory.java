@@ -1,5 +1,6 @@
 package com.example.mywallet.mywalletdemo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.CascadeType;
@@ -30,7 +31,7 @@ public class BalanceHistory {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date lastUpdate;
-
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="customerId")
     private Customer customer;

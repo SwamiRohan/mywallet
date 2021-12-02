@@ -1,5 +1,6 @@
 package com.example.mywallet.mywalletdemo.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -13,6 +14,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.text.DateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,31 +27,32 @@ import java.util.List;
 @Entity
 @Table(name = "Customer")
 public class Customer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int customerId;
-    //@NotBlank(message = "mandatory field, should not be empty")
+    @NotBlank(message = "mandatory field, should not be empty")
     private String customerFName;
-    //@NotBlank(message = "mandatory field, should not be empty")
+    @NotBlank(message = "mandatory field, should not be empty")
     private String customerLName;
-    //@Email(message = "should be proper email address")
+    @Email(message = "should be proper email address")
     private String customerMail;
-    //@Size(min=10,max=10,message = "should be of length 10")
+    //@Size(min=10,message = "should be of length 10")
     private int customerNum;
-    //
     private String password;
+    //@NotBlank(message = "mandatory field")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private Date customerDOB;
-    //@NotBlank(message = "mandatory field, should not be empty")
+    @NotBlank(message = "mandatory field, should not be empty")
     private String customerAddress;
 
     @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "customerBId")
+    @JsonIgnore
     private MyBalance myBalance;
 
     @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<BalanceHistory> balanceHistories = new ArrayList<>();
-
 
     public List<BalanceHistory> getBalanceHistory() {
         return balanceHistories;
@@ -56,7 +63,6 @@ public class Customer {
     }
 
     public Customer(){
-
     }
 
     public Customer(int customerId, String customerFName, String customerLName, String customerMail, List<BalanceHistory> balanceHistories) {

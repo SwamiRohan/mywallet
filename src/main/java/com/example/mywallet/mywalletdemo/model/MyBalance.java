@@ -1,4 +1,6 @@
 package com.example.mywallet.mywalletdemo.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,7 +18,7 @@ public class MyBalance {
     private int customerBId;
     private double creditBalance=0;
     private double debitBalance=0;
-
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "myBalance")
     private Customer customer;
 

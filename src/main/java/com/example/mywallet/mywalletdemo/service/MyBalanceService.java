@@ -35,8 +35,6 @@ public class MyBalanceService {
         return currentBalance;
     }
 
-
-
     public MyBalance creditMyWallet(MyBalance myBalance){
         Customer id = customerRepository.findByCustomerId(myBalance.getCustomerBId());
         if(id == null){
