@@ -1,18 +1,22 @@
 package com.example.mywallet.mywalletdemo.model;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 
 @Entity
 @Table(name = "Customer")
@@ -21,9 +25,9 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int customerId;
-    @NotBlank(message = "mandatory field, should not be empty")
+    //@NotBlank(message = "mandatory field, should not be empty")
     private String customerFName;
-    @NotBlank(message = "mandatory field, should not be empty")
+    //@NotBlank(message = "mandatory field, should not be empty")
     private String customerLName;
     //@Email(message = "should be proper email address")
     private String customerMail;
@@ -32,13 +36,36 @@ public class Customer {
     //
     private String password;
     private Date customerDOB;
-    @NotBlank(message = "mandatory field, should not be empty")
+    //@NotBlank(message = "mandatory field, should not be empty")
     private String customerAddress;
 
-    @ManyToOne
-    @JoinColumn(name="id")
-    @Fetch(FetchMode.JOIN)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name = "customerBId")
     private MyBalance myBalance;
+
+    @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<BalanceHistory> balanceHistories = new ArrayList<>();
+
+
+    public List<BalanceHistory> getBalanceHistory() {
+        return balanceHistories;
+    }
+
+    public void setBalanceHistory(List<BalanceHistory> balanceHistories) {
+        this.balanceHistories = balanceHistories;
+    }
+
+    public Customer(){
+
+    }
+
+    public Customer(int customerId, String customerFName, String customerLName, String customerMail, List<BalanceHistory> balanceHistories) {
+        this.customerId = customerId;
+        this.customerFName = customerFName;
+        this.customerLName = customerLName;
+        this.customerMail = customerMail;
+        this.balanceHistories = balanceHistories;
+    }
 
     public MyBalance getMyBalance() {
         return myBalance;
@@ -111,6 +138,7 @@ public class Customer {
     public void setCustomerAddress(String customerAddress) {
         this.customerAddress = customerAddress;
     }
+
 }
 
 
