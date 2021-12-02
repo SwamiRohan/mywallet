@@ -1,5 +1,6 @@
 package com.example.mywallet.mywalletdemo.controller;
 
+import com.example.mywallet.mywalletdemo.exception.CustomerNotFoundException;
 import com.example.mywallet.mywalletdemo.model.BalanceHistory;
 import com.example.mywallet.mywalletdemo.model.Customer;
 import com.example.mywallet.mywalletdemo.model.MyBalance;
@@ -30,12 +31,18 @@ public class MyBalanceController {
 
     @GetMapping("user/myBalance/myHistory/{customerBId}")
     public List<BalanceHistory> getDetailsByCustomerId(@PathVariable("customerBId") int customerBId){
-        return myBalanceService.getDetailsByCustomerId(customerBId);
+        List<BalanceHistory> balanceHistory = myBalanceService.getDetailsByCustomerId(customerBId);
+        if(balanceHistory == null)
+            throw new CustomerNotFoundException("Customer with id: "+ customerBId + " does not exists");
+        return balanceHistory;
     }
 
     @GetMapping("user/myBalance/currentBalance/{customerBId}")
     public Object getCurrentBalance(@PathVariable("customerBId") int customerBId){
-        return myBalanceService.getCurrentBalance(customerBId);
+        Object obj = myBalanceService.getCurrentBalance(customerBId);
+        if(obj == null)
+            throw new CustomerNotFoundException("Customer with id: "+ customerBId + " does not exists");
+        return obj;
     }
 
     @GetMapping("user/allUsers/myBalance/details")
@@ -43,17 +50,17 @@ public class MyBalanceController {
         return myBalanceService.getDetailsOfAllUser();
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/user/myBalance/credit")
     public Double creditWallet(@RequestBody MyBalance myBalance){
        myBalanceService.creditMyWallet(myBalance);
        return myBalance.getCreditBalance();
     }
-
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/user/myBalance/debit")
-    public ResponseEntity<Double> debitWallet(@RequestBody MyBalance myBalance){
+    public Double debitWallet(@RequestBody MyBalance myBalance){
         myBalanceService.debitMyWallet(myBalance);
-        return new ResponseEntity<>(myBalance.getDebitBalance(),HttpStatus.CREATED);
+        return myBalance.getDebitBalance();
     }
 
 
